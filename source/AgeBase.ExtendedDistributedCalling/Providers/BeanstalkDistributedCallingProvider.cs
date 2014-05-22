@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using Amazon.EC2;
 using Amazon.EC2.Model;
@@ -11,6 +13,14 @@ namespace AgeBase.ExtendedDistributedCalling.Providers
 {
     public class BeanstalkDistributedCallingProvider : AmazonDistributedCallingProvider
     {
+        protected static string GetEnvironmentNameFromConfiguration()
+        {
+            if (ConfigurationManager.AppSettings["AWS_ENV_NAME"] == null)
+                throw new ArgumentException("Missing AWS_ENV_NAME app setting");
+            var environmentName = ConfigurationManager.AppSettings["AWS_ENV_NAME"];
+            return environmentName;
+        }
+
         public override List<string> GetServers()
         {
             var accessKey = GetAccessKeyFromConfiguration();

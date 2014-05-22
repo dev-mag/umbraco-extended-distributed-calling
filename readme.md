@@ -10,7 +10,7 @@ Add the following configuration section to `web.config` to configure and enable 
         <configSections>
             <section name="extendedDistributedCalling" type="AgeBase.ExtendedDistributedCalling.Configuration.ExtendedDistributedCallingConfigSection, AgeBase.ExtendedDistributedCalling" />
         </configSections>
-        <extendedDistributedCalling enabled="true" user="0" type="AgeBase.ExtendedDistributedCalling.Providers.AmazonDistributedCallingProvider" assembly="AgeBase.ExtendedDistributedCalling" />
+        <extendedDistributedCalling enabled="true" user="0" type="AgeBase.ExtendedDistributedCalling.Providers.BeanstalkDistributedCallingProvider" assembly="AgeBase.ExtendedDistributedCalling" />
     </configuration>
 
 The `enabled` attribute can be used to turn Extended Distributed Calling on or off. The `user` attribute must contain the used id which will be used to authenticate any cache refresh request. The `type` attribute must contain the fully qualified class name. The `assembly` attribute must contain the assembly name where the type resides. 
@@ -19,11 +19,11 @@ The `enabled` attribute can be used to turn Extended Distributed Calling on or o
 
 To write your own provider, create a new class which implements the `IExtendedDistributedCallingProvider` interface. The interface contains one method which requires a list of addresses to be returned. To use your provider, change your `type` and `assembly` configuration in web.config to the your new provider. To get you started, the Extended Distributed Calling assembly contains the following providers for use within your Umbraco applications:
 
-### Amazon Distributed Calling
+### Beanstalk Distributed Calling
 
 For use on scalable Amazon Elastic Load Balanced applications. Type and assembly details are as follows:
 
-  * Type: `AgeBase.ExtendedDistributedCalling.Providers.AmazonDistributedCallingProvider`
+  * Type: `AgeBase.ExtendedDistributedCalling.Providers.BeanstalkDistributedCallingProvider`
   * Assembly: `AgeBase.ExtendedDistributedCalling`
 
 The provider requires the following Application Settings via web.config. These can either be manually or dynamically added via the AWS console:

@@ -15,9 +15,9 @@ namespace AgeBase.ExtendedDistributedCalling.Providers
           
         protected static string GetServerTagNameFromConfiguration()
         {
-            if (ConfigurationManager.AppSettings["SERVER_TAG_NAME"] == null)
-                throw new ArgumentException("Missing SERVER_TAG_NAME app setting");
-            var environmentName = ConfigurationManager.AppSettings["SERVER_TAG_NAME"];
+            var environmentName = ConfigurationManager.AppSettings["AWS_INSTANCE_TAG_NAME"];
+            if (environmentName == null)
+                throw new ArgumentException("Missing AWS_INSTANCE_TAG_NAME app setting");
             return environmentName;
         }
 
@@ -38,7 +38,7 @@ namespace AgeBase.ExtendedDistributedCalling.Providers
             var myInstanceId = EC2Metadata.InstanceId;
 
             var tagValue = GetInstanceTagValue(client, myInstanceId, tagName);
-            var instances = FindInstancesWithTags(client, tagName, tagValue, myInstanceId);
+            var instances = FindInstancesWithTags(client, tagName, tagValue);
 
             return instances
                 .Select(x => x.InstanceId)
@@ -48,8 +48,7 @@ namespace AgeBase.ExtendedDistributedCalling.Providers
         private static IEnumerable<Instance> FindInstancesWithTags(
             IAmazonEC2 client,
             string tagName, 
-            string tagValue, 
-            string myInstanceId)
+            string tagValue)
         {
             var request = new DescribeInstancesRequest
             {
@@ -64,8 +63,9 @@ namespace AgeBase.ExtendedDistributedCalling.Providers
             var instances = response
                 .Reservations
                 .SelectMany(x => x.Instances)
-                .Where(x => !x.InstanceId.Equals(myInstanceId, StringComparison.InvariantCultureIgnoreCase))
                 .ToList();
+
+            Log.DebugFormat("Found {0} instances", instances.Count);
 
             return instances;
         }
@@ -90,8 +90,14 @@ namespace AgeBase.ExtendedDistributedCalling.Providers
             };
 
             var describeResponse = client.DescribeInstances(request);
-            var instance = describeResponse.Reservations.SelectMany(x => x.Instances).Single();
-            return instance;
+
+            var instance = describeResponse.Reservations.SelectMany(x => x.Instances).SingleOrDefault();
+            if (instance != null)
+                return instance;
+
+            var error = string.Format("Could not find instance with id `{0}`", instanceId);
+            Log.Error(error);
+            throw new ArgumentException(error, "instanceId");
         }
 
         private static Tag GetTagValue(string tagName, Instance instance)

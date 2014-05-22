@@ -8,36 +8,29 @@ namespace AgeBase.ExtendedDistributedCalling.Providers
 {
     public abstract class AmazonDistributedCallingProvider : IExtendedDistributedCallingProvider
     {
-        protected static string GetEnvironmentNameFromConfiguration()
-        {
-            if (ConfigurationManager.AppSettings["AWS_ENV_NAME"] == null)
-                throw new ArgumentException("Missing AWS_ENV_NAME app setting");
-            var environmentName = ConfigurationManager.AppSettings["AWS_ENV_NAME"];
-            return environmentName;
-        }
-
         protected static string GetSecretKeyFromConfiguration()
         {
-            if (ConfigurationManager.AppSettings["AWS_SECRET_KEY"] == null)
-                throw new ArgumentException("Missing AWS_SECRET_KEY app setting");
             var secretKey = ConfigurationManager.AppSettings["AWS_SECRET_KEY"];
+            if (secretKey == null)
+                throw new ArgumentException("Missing AWS_SECRET_KEY app setting");
             return secretKey;
         }
 
         protected static string GetAccessKeyFromConfiguration()
         {
-            if (ConfigurationManager.AppSettings["AWS_ACCESS_KEY_ID"] == null)
-                throw new ArgumentException("Missing AWS_ACCESS_KEY_ID app setting");
             var accessKey = ConfigurationManager.AppSettings["AWS_ACCESS_KEY_ID"];
+            if (accessKey == null)
+                throw new ArgumentException("Missing AWS_ACCESS_KEY_ID app setting");
             return accessKey;
         }
         
         protected static RegionEndpoint GetAwsRegionFromConfiguration()
         {
-            if (ConfigurationManager.AppSettings["AWS_REGION"] == null)
+            var awsRegionName = ConfigurationManager.AppSettings["AWS_REGION"];
+            if (awsRegionName == null)
                 throw new ArgumentException("Missing AWS_REGION app setting");
 
-            switch (ConfigurationManager.AppSettings["AWS_REGION"].Trim().ToLower())
+            switch (awsRegionName.Trim().ToLower())
             {
                 case "us-east-1":
                     return RegionEndpoint.USEast1;
