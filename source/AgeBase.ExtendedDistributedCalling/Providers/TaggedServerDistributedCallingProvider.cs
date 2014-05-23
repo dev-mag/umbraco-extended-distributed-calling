@@ -41,7 +41,7 @@ namespace AgeBase.ExtendedDistributedCalling.Providers
             var instances = FindInstancesWithTags(client, tagName, tagValue);
 
             return instances
-                .Select(x => x.PrivateDnsName)
+                .Select(x => x.PrivateIpAddress)
                 .ToList();
         }
 
