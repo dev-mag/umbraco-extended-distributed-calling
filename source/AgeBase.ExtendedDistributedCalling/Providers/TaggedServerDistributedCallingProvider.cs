@@ -54,7 +54,7 @@ namespace AgeBase.ExtendedDistributedCalling.Providers
             {
                 Filters = new List<Filter>
                 {
-                    new Filter { Name = tagName, Values = new List<string> { tagValue } }
+                    new Filter { Name = "tag:" + tagName, Values = new List<string> { tagValue } }
                 }
             };
 
